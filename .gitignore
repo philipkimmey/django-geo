@@ -1,0 +1,6 @@
+*.sqlite3
+*.pyc
+*.swo
+*.swp
+.redcar
+.DS_Store
