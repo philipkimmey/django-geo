@@ -1,4 +1,5 @@
 from decimal import Decimal
+from distances import distances
 
 class Point(object):
     """
@@ -87,3 +88,8 @@ class Bounds(object):
         if (self.sw.lat > self.ne.lat) or (self.sw.lng > self.ne.lng):
             raise Exception("Points are not in (sw, ne) order")
         super(Bounds, self).__init__()
+    def get_radius(self):
+        approx_distance = distances.geographic_distance(
+                self.sw.lat, self.sw.lng,
+                self.ne.lat, self.ne.lng)
+        return approx_distance / 2
