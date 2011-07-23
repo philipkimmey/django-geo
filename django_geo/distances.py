@@ -2,6 +2,10 @@ import math
 class distances:
 	@staticmethod
 	def geographic_distance(lat1, lng1, lat2, lng2):
+        lat1 = float(lat1)
+        lng1 = float(lng1)
+        lat2 = float(lat2)
+        lng2 = float(lng2)
 		lat1 = (lat1 * math.pi) / 180
 		lng1 = (lng1 * math.pi) / 180
 		lat2 = (lat2 * math.pi) / 180
