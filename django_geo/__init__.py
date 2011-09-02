@@ -1,9 +1,6 @@
 from decimal import Decimal
 from distances import distances
 
-from .distances import max_variation_lat
-from .distances import max_variation_lon
-
 class Point(object):
     """
     Two-tuple of lat/lng.
@@ -96,8 +93,8 @@ class Bounds(object):
         """
         Returns a Bounds object based on a center point and a distance.
         """
-        lat_delta = max_variation_lat(center.lat, distance)
-        lng_delta = max_variation_lon(center.lng, distance)
+        lat_delta = distances.max_variation_lat(center.lat, distance)
+        lng_delta = distances.max_variation_lon(center.lng, distance)
         sw = Point(center.lat - lat_delta, center.lng - lng_delta)
         ne = Point(center.lat + lat_delta, center.lng + lng_delta)
         return Bounds(sw=sw, ne=ne)
