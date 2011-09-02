@@ -1,4 +1,5 @@
 from decimal import Decimal
+from distances import distances
 
 from .distances import max_variation_lat
 from .distances import max_variation_lon
@@ -100,3 +101,8 @@ class Bounds(object):
         sw = Point(center.lat - lat_delta, center.lng - lng_delta)
         ne = Point(center.lat + lat_delta, center.lng + lng_delta)
         return Bounds(sw=sw, ne=ne)
+    def get_radius(self):
+        approx_distance = distances.geographic_distance(
+                self.sw.lat, self.sw.lng,
+                self.ne.lat, self.ne.lng)
+        return approx_distance / 2
