@@ -51,4 +51,7 @@ class BoundsTest(TestCase):
     def test_hash(self):
         self.assertEqual(hash(self.bounds1), hash(self.bounds2))
         self.assertNotEqual(hash(self.bounds1), hash(self.bounds3))
+    def test_get_bounds(self):
+        center = Point(47.244, -122.42)
+        Bounds.get_bounds(center, 10)
         

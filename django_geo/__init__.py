@@ -93,8 +93,10 @@ class Bounds(object):
         """
         Returns a Bounds object based on a center point and a distance.
         """
-        lat_delta = distances.max_variation_lat(center.lat, distance)
-        lng_delta = distances.max_variation_lon(center.lng, distance)
+        lat_delta = Decimal(unicode(distances.max_variation_lat(distance)))
+        lng_delta = Decimal(unicode(distances.max_variation_lon(
+                float(unicode(center.lng)),
+                distance)))
         sw = Point(center.lat - lat_delta, center.lng - lng_delta)
         ne = Point(center.lat + lat_delta, center.lng + lng_delta)
         return Bounds(sw=sw, ne=ne)
