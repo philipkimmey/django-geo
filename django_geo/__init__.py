@@ -1,5 +1,8 @@
 from decimal import Decimal
 
+from .distances import max_variation_lat
+from .distances import max_variation_lon
+
 class Point(object):
     """
     Two-tuple of lat/lng.
@@ -87,3 +90,13 @@ class Bounds(object):
         if (self.sw.lat > self.ne.lat) or (self.sw.lng > self.ne.lng):
             raise Exception("Points are not in (sw, ne) order")
         super(Bounds, self).__init__()
+    @staticmethod
+    def get_bounds(center, distance):
+        """
+        Returns a Bounds object based on a center point and a distance.
+        """
+        lat_delta = max_variation_lat(center.lat, distance)
+        lng_delta = max_variation_lon(center.lng, distance)
+        sw = Point(center.lat - lat_delta, center.lng - lng_delta)
+        ne = Point(center.lat + lat_delta, center.lng + lng_delta)
+        return Bounds(sw=sw, ne=ne)
