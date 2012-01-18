@@ -6,6 +6,13 @@ class Point(object):
     Two-tuple of lat/lng.
     Stored as Decimal.
     """
+
+    MAX_LATITUDE = Decimal('90.0')
+    MIN_LATITUDE = Decimal('-90.0')
+
+    MAX_LONGITUDE = Decimal('180.0')
+    MIN_LONGITUDE = Decimal('-180.0')
+
     def __hash__(self):
         return (hash(self.lat) * 179) ^ hash(self.lng)
     def __eq__(self, other):
@@ -30,9 +37,9 @@ class Point(object):
             self.lng = Decimal(unicode(args[1]))
         else:
             raise Exception("Invalid constructor params to Point")
-        if self.lat > Decimal('90.0') or self.lat < Decimal('-90.0'):
+        if self.lat > self.MAX_LATITUDE or self.lat < self.MIN_LATITUDE:
             raise Exception("Invalid latitude value")
-        if self.lng > Decimal('180.0') or self.lng < Decimal('-180.0'):
+        if self.lng > self.MAX_LONGITUDE or self.lng < self.MIN_LONGITUDE:
             raise Exception("Invalid longitude value")
         super(Point, self).__init__()
     @property
@@ -88,20 +95,40 @@ class Bounds(object):
         if (self.sw.lat > self.ne.lat) or (self.sw.lng > self.ne.lng):
             raise Exception("Points are not in (sw, ne) order")
         super(Bounds, self).__init__()
-    @staticmethod
-    def get_bounds(center, distance):
+
+    @classmethod
+    def __min_max(cls, val, min, max):
+        if val < min:
+            return min
+        elif val > max:
+            return max
+        return val
+
+    @classmethod
+    def get_bounds(cls, center, distance):
         """
         Returns a Bounds object based on a center point and a distance.
         """
         lat_delta = Decimal(unicode(distances.max_variation_lat(distance)))
         lng_delta = Decimal(unicode(distances.max_variation_lon(
-                float(unicode(center.lng)),
-                distance)))
-        sw = Point(center.lat - lat_delta, center.lng - lng_delta)
-        ne = Point(center.lat + lat_delta, center.lng + lng_delta)
+            float(unicode(center.lng)), distance)))
+
+        sw = Point(
+            cls.__min_max(center.lat - lat_delta,
+                Point.MIN_LATITUDE, Point.MAX_LATITUDE),
+            cls.__min_max(center.lng - lng_delta,
+                Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
+        ne = Point(
+            cls.__min_max(center.lat + lat_delta,
+                Point.MIN_LATITUDE, Point.MAX_LATITUDE),
+            cls.__min_max(center.lng + lng_delta,
+                Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
+
         return Bounds(sw=sw, ne=ne)
+
     def get_radius(self):
         approx_distance = distances.geographic_distance(
                 self.sw.lat, self.sw.lng,
                 self.ne.lat, self.ne.lng)
         return approx_distance / 2
+
