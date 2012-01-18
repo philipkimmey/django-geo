@@ -1,6 +1,10 @@
 from decimal import Decimal
 from distances import distances
 
+from geopy import Point as GeoPyPoint
+from geopy.distance import distance as geopy_distance
+
+
 class Point(object):
     """
     Two-tuple of lat/lng.
@@ -109,20 +113,19 @@ class Bounds(object):
         """
         Returns a Bounds object based on a center point and a distance.
         """
-        lat_delta = Decimal(unicode(distances.max_variation_lat(distance)))
-        lng_delta = Decimal(unicode(distances.max_variation_lon(
-            float(unicode(center.lng)), distance)))
 
-        sw = Point(
-            cls.__min_max(center.lat - lat_delta,
-                Point.MIN_LATITUDE, Point.MAX_LATITUDE),
-            cls.__min_max(center.lng - lng_delta,
-                Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
+        d = geopy_distance(kilometers=distance)
+        point = GeoPyPoint(center.latitude, center.longitude)
+
+        ne = d.destination(point, 45)
+        sw = d.destination(point, 225)
+
         ne = Point(
-            cls.__min_max(center.lat + lat_delta,
-                Point.MIN_LATITUDE, Point.MAX_LATITUDE),
-            cls.__min_max(center.lng + lng_delta,
-                Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
+            cls.__min_max(ne.latitude, Point.MIN_LATITUDE, Point.MAX_LATITUDE),
+            cls.__min_max(ne.longitude, Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
+        sw = Point(
+            cls.__min_max(sw.latitude, Point.MIN_LATITUDE, Point.MAX_LATITUDE),
+            cls.__min_max(sw.longitude, Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
 
         return Bounds(sw=sw, ne=ne)
 
