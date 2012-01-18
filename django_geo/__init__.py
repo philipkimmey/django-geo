@@ -101,14 +101,6 @@ class Bounds(object):
         super(Bounds, self).__init__()
 
     @classmethod
-    def __min_max(cls, val, min, max):
-        if val < min:
-            return min
-        elif val > max:
-            return max
-        return val
-
-    @classmethod
     def get_bounds(cls, center, distance):
         """
         Returns a Bounds object based on a center point and a distance.
@@ -120,14 +112,9 @@ class Bounds(object):
         ne = d.destination(point, 45)
         sw = d.destination(point, 225)
 
-        ne = Point(
-            cls.__min_max(ne.latitude, Point.MIN_LATITUDE, Point.MAX_LATITUDE),
-            cls.__min_max(ne.longitude, Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
-        sw = Point(
-            cls.__min_max(sw.latitude, Point.MIN_LATITUDE, Point.MAX_LATITUDE),
-            cls.__min_max(sw.longitude, Point.MIN_LONGITUDE, Point.MAX_LONGITUDE))
-
-        return Bounds(sw=sw, ne=ne)
+        return Bounds(
+            sw=Point(sw.latitude, sw.longitude), 
+            ne=Point(ne.latitude, ne.longitude))
 
     def get_radius(self):
         approx_distance = distances.geographic_distance(
