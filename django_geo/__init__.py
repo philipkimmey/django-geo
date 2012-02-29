@@ -113,9 +113,13 @@ class Bounds(object):
         sw = d.destination(point, 225)
 
         return Bounds(
-            sw=Point(sw.latitude, sw.longitude), 
-            ne=Point(ne.latitude, ne.longitude))
+            sw=Point(Decimal(sw.latitude), Decimal(sw.longitude)), 
+            ne=Point(Decimal(ne.latitude), Decimal(ne.longitude)))
 
+    @classmethod
+    def get_coord_bounds(cls, lat, lng, distance):
+        return cls.get_bounds(Point(lat=lat, lng=lng), distance)
+        
     def get_radius(self):
         approx_distance = distances.geographic_distance(
                 self.sw.lat, self.sw.lng,
