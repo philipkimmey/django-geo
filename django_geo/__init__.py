@@ -119,6 +119,16 @@ class Bounds(object):
     @classmethod
     def get_coord_bounds(cls, lat, lng, distance):
         return cls.get_bounds(Point(lat=lat, lng=lng), distance)
+
+    @classmethod
+    def get_center_coords(cls, min_lat, min_lng, max_lat, max_lng):
+        approx_distance = distances.geographic_distance(
+                min_lat, min_lng, max_lat, max_lng,)
+        
+        d = geopy_distance(kilometers=approx_distance / 2.0)
+        center = d.destination(GeoPyPoint(max_lat, max_lng), 225)
+
+        return (center.latitude, center.longitude,)
         
     def get_radius(self):
         approx_distance = distances.geographic_distance(
